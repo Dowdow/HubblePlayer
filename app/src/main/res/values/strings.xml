@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">HubblePlayer</string>
+    <string name="app_name_clean">Hubble Player</string>
+    <string name="play">Play</string>
+    <string name="shuffle_on">Shuffle On</string>
+    <string name="shuffle_off">Shuffle Off</string>
+    <string name="proximity_on">Proximity On</string>
+    <string name="proximity_off">Proximity Off</string>
+</resources>
