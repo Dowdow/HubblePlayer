@@ -33,10 +33,10 @@ public class ProximityHandler implements SensorEventListener{
         if (sensorEvent.sensor.getType() == Sensor.TYPE_PROXIMITY) {
             float cm = sensorEvent.values[0];
             //System.out.println(cm);
-            if (cm <= 2 && !close) {
+            if (cm == 0 && !close) {
                 close  = true;
             }
-            if (cm >= 8 && close) {
+            if (cm >= 1 && close) {
                 proximityListener.onProximityDetected();
                 close = false;
             }

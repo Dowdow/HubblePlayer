@@ -141,6 +141,35 @@ public class PlayerActivity extends AppCompatActivity {
         setPlayerTitleText();
     }
 
+    private void setPlayerTitleText() {
+        playerTitle.setText(musicService.getSongTitle());
+    }
+
+    private Handler handler = new Handler();
+    private Runnable runnable = new Runnable() {
+
+        @Override
+        public void run() {
+            if (musicConnection && playing) {
+                setPlayerTitleText();
+                timeBar.setProgress(musicService.getProgress());
+            }
+            if (!kill) {
+                handler.postDelayed(this, 500);
+            }
+        }
+
+    };
+
+    public void startRunnable() {
+        kill = false;
+        runOnUiThread(runnable);
+    }
+
+    public void stopRunnable() {
+        kill = true;
+    }
+
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
         MenuInflater inflater = getMenuInflater();
@@ -172,35 +201,6 @@ public class PlayerActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void setPlayerTitleText() {
-        playerTitle.setText(musicService.getSongTitle());
-    }
-
-    private Handler handler = new Handler();
-    private Runnable runnable = new Runnable() {
-
-        @Override
-        public void run() {
-            if (musicConnection && playing) {
-                setPlayerTitleText();
-                timeBar.setProgress(musicService.getProgress());
-            }
-            if (!kill) {
-                handler.postDelayed(this, 500);
-            }
-        }
-
-    };
-
-    public void startRunnable() {
-        kill = false;
-        runOnUiThread(runnable);
-    }
-
-    public void stopRunnable() {
-        kill = true;
     }
 
     private SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {

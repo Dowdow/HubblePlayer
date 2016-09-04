@@ -34,8 +34,8 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
         songPosition = 0;
         mediaPlayer = new MediaPlayer();
-        mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
         mediaPlayer.setOnPreparedListener(this);
         mediaPlayer.setOnErrorListener(this);
         mediaPlayer.setOnCompletionListener(this);
@@ -167,7 +167,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     public void onCompletion(MediaPlayer mediaPlayer) {
         if(mediaPlayer.getCurrentPosition() == mediaPlayer.getDuration()) {
             next();
-            start();
+            play();
         }
     }
 
