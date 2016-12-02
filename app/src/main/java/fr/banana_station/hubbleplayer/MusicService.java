@@ -43,6 +43,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     @Override
     public void onDestroy() {
+        mediaPlayer.release();
         stopForeground(true);
     }
 
@@ -165,10 +166,8 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-        if(mediaPlayer.getCurrentPosition() == mediaPlayer.getDuration()) {
             next();
             play();
-        }
     }
 
     @Override

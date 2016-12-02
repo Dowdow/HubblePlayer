@@ -1,14 +1,19 @@
 package fr.banana_station.hubbleplayer;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,6 +29,7 @@ import java.util.List;
 
 public class PlayerActivity extends AppCompatActivity {
 
+    private final int REQUEST_READ_EXTERNAL_STORAGE = 1;
     private List<Song> songList;
     private ProximityHandler proximityHandler;
     private SongFinder songFinder;
@@ -32,7 +38,9 @@ public class PlayerActivity extends AppCompatActivity {
     private boolean musicConnection = false;
     private boolean playing = false;
     private boolean kill = false;
+    private boolean authorised = false;
 
+    private ListView songListView;
     private ImageButton play;
     private Menu menu;
     private SeekBar timeBar;
@@ -44,17 +52,21 @@ public class PlayerActivity extends AppCompatActivity {
         System.out.println("======\nCREATE\n======");
         setContentView(R.layout.activity_player);
 
-        ListView songListView = (ListView) findViewById(R.id.songList);
+        songListView = (ListView) findViewById(R.id.songList);
         play = (ImageButton) findViewById(R.id.play);
         RelativeLayout player = (RelativeLayout) findViewById(R.id.player);
         timeBar = (SeekBar) player.findViewById(R.id.timeBar);
         timeBar.setOnSeekBarChangeListener(seekBarChangeListener);
         playerTitle = (TextView) player.findViewById(R.id.playerTitle);
 
-        songFinder = new SongFinder(getContentResolver());
-        songList = songFinder.find();
-        SongAdapter songAdapter = new SongAdapter(this, songList, songFinder.getCursor());
-        songListView.setAdapter(songAdapter);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    REQUEST_READ_EXTERNAL_STORAGE);
+        } else {
+            fillSongList();
+        }
 
         proximityHandler = new ProximityHandler((SensorManager) getSystemService(Context.SENSOR_SERVICE));
         proximityHandler.setProximityListener(proximityListener);
@@ -68,14 +80,16 @@ public class PlayerActivity extends AppCompatActivity {
         super.onStart();
         System.out.println("=====\nSTART\n=====");
 
-        if(intent == null){
-            intent = new Intent(this, MusicService.class);
-            bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-            startService(intent);
-        }
+        if (authorised) {
+            if (intent == null) {
+                intent = new Intent(this, MusicService.class);
+                bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+                startService(intent);
+            }
 
-        if(playing) {
-            startRunnable();
+            if (playing) {
+                startRunnable();
+            }
         }
     }
 
@@ -90,17 +104,25 @@ public class PlayerActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         System.out.println("=======\nDESTROY\n=======");
-        songFinder.closeCursor();
+        if (songFinder != null) {
+            songFinder.closeCursor();
+        }
         proximityHandler.stop();
         playing = false;
         stopRunnable();
-        unbindService(serviceConnection);
-        stopService(intent);
+        try {
+            unbindService(serviceConnection);
+        } catch (Exception e) {
+            System.err.println("Service is not registered");
+        }
+        if (intent != null) {
+            stopService(intent);
+        }
     }
 
     @Override
     public void onBackPressed() {
-        if(playing) {
+        if (playing) {
             this.moveTaskToBack(true);
         } else {
             super.onBackPressed();
@@ -116,7 +138,7 @@ public class PlayerActivity extends AppCompatActivity {
         setPlayerTitleText();
     }
 
-    public void onSongPrevious(View  view) {
+    public void onSongPrevious(View view) {
         musicService.previous();
         setPlayerTitleText();
     }
@@ -127,7 +149,7 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     public void onPlayPause(View view) {
-        if(playing) {
+        if (playing) {
             playing = false;
             stopRunnable();
             musicService.pause();
@@ -190,7 +212,7 @@ public class PlayerActivity extends AppCompatActivity {
                 }
                 return true;
             case R.id.proximity:
-                if(proximityHandler.isStarting()) {
+                if (proximityHandler.isStarting()) {
                     proximityHandler.stop();
                     menu.findItem(R.id.proximity).setTitle(R.string.proximity_on);
                 } else {
@@ -209,7 +231,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         @Override
         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-            if(b) {
+            if (b) {
                 lastSelected = i;
             }
         }
@@ -225,7 +247,7 @@ public class PlayerActivity extends AppCompatActivity {
         }
     };
 
-    private ServiceConnection serviceConnection = new ServiceConnection(){
+    private ServiceConnection serviceConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -245,11 +267,32 @@ public class PlayerActivity extends AppCompatActivity {
     private ProximityHandler.ProximityListener proximityListener = new ProximityHandler.ProximityListener() {
         @Override
         public void onProximityDetected() {
-            if(musicConnection) {
+            if (musicConnection) {
                 musicService.next();
                 setPlayerTitleText();
             }
         }
     };
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_READ_EXTERNAL_STORAGE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    fillSongList();
+                    onStart();
+                } else {
+                    this.finishAffinity();
+                }
+            }
+        }
+    }
+
+    private void fillSongList() {
+        songFinder = new SongFinder(getContentResolver());
+        songList = songFinder.find();
+        SongAdapter songAdapter = new SongAdapter(this, songList, songFinder.getCursor());
+        songListView.setAdapter(songAdapter);
+        authorised = true;
+    }
 }
