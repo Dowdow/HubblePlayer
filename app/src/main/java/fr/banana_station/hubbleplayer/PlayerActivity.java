@@ -3,6 +3,7 @@ package fr.banana_station.hubbleplayer;
 import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
@@ -14,6 +15,7 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -139,28 +141,34 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     public void onSongPrevious(View view) {
-        musicService.previous();
-        setPlayerTitleText();
+        if (musicService != null) {
+            musicService.previous();
+            setPlayerTitleText();
+        }
     }
 
     public void onSongNext(View view) {
-        musicService.next();
-        setPlayerTitleText();
+        if (musicService != null) {
+            musicService.next();
+            setPlayerTitleText();
+        }
     }
 
     public void onPlayPause(View view) {
-        if (playing) {
-            playing = false;
-            stopRunnable();
-            musicService.pause();
-            play.setImageResource(R.drawable.play);
-        } else {
-            playing = true;
-            startRunnable();
-            musicService.play();
-            play.setImageResource(R.drawable.pause);
+        if (musicService != null) {
+            if (playing) {
+                playing = false;
+                stopRunnable();
+                musicService.pause();
+                play.setImageResource(R.drawable.play);
+            } else {
+                playing = true;
+                startRunnable();
+                musicService.play();
+                play.setImageResource(R.drawable.pause);
+            }
+            setPlayerTitleText();
         }
-        setPlayerTitleText();
     }
 
     private void setPlayerTitleText() {
@@ -169,7 +177,6 @@ public class PlayerActivity extends AppCompatActivity {
 
     private Handler handler = new Handler();
     private Runnable runnable = new Runnable() {
-
         @Override
         public void run() {
             if (musicConnection && playing) {
@@ -180,7 +187,6 @@ public class PlayerActivity extends AppCompatActivity {
                 handler.postDelayed(this, 500);
             }
         }
-
     };
 
     public void startRunnable() {
@@ -203,14 +209,17 @@ public class PlayerActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.shuffle:
-                if (musicService.isShuffle()) {
-                    musicService.setShuffle(false);
-                    menu.findItem(R.id.shuffle).setTitle(R.string.shuffle_on);
-                } else {
-                    musicService.setShuffle(true);
-                    menu.findItem(R.id.shuffle).setTitle(R.string.shuffle_off);
+                if (musicService != null) {
+                    if (musicService.isShuffle()) {
+                        musicService.setShuffle(false);
+                        menu.findItem(R.id.shuffle).setTitle(R.string.shuffle_on);
+                    } else {
+                        musicService.setShuffle(true);
+                        menu.findItem(R.id.shuffle).setTitle(R.string.shuffle_off);
+                    }
+                    return true;
                 }
-                return true;
+                return false;
             case R.id.proximity:
                 if (proximityHandler.isStarting()) {
                     proximityHandler.stop();
@@ -243,7 +252,9 @@ public class PlayerActivity extends AppCompatActivity {
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-            musicService.seekTo(lastSelected);
+            if (musicService != null) {
+                musicService.seekTo(lastSelected);
+            }
         }
     };
 
@@ -282,7 +293,7 @@ public class PlayerActivity extends AppCompatActivity {
                     fillSongList();
                     onStart();
                 } else {
-                    this.finishAffinity();
+                    exitApp();
                 }
             }
         }
@@ -293,6 +304,27 @@ public class PlayerActivity extends AppCompatActivity {
         songList = songFinder.find();
         SongAdapter songAdapter = new SongAdapter(this, songList, songFinder.getCursor());
         songListView.setAdapter(songAdapter);
-        authorised = true;
+        if (songList.size() > 0) {
+            authorised = true;
+        } else {
+            showNoMusicFound();
+        }
+    }
+
+    private void showNoMusicFound() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.no_music_message).setTitle(R.string.no_music_title);
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                exitApp();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void exitApp() {
+        this.finishAffinity();
     }
 }

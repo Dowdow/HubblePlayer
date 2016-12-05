@@ -7,3 +7,5 @@ local.properties
 .DS_Store
 /captures
 projectFilesBackup
+.idea/dictionaries/
+hubbleplayer.jks
