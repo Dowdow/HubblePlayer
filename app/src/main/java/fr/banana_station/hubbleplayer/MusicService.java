@@ -61,7 +61,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     }
 
     public void play() {
-        if(prepared) {
+        if (prepared) {
             mediaPlayer.start();
         } else {
             start();
@@ -75,15 +75,15 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     }
 
     public void previous() {
-        if(shuffle) {
+        if (shuffle) {
             shuffle();
         } else {
-            if(songPosition == 0) {
+            if (songPosition == 0) {
                 songPosition = songList.size() - 1;
             } else {
                 songPosition--;
             }
-            if(mediaPlayer.isPlaying()) {
+            if (mediaPlayer.isPlaying()) {
                 start();
             } else {
                 prepared = false;
@@ -92,7 +92,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     }
 
     public void next() {
-        if(shuffle) {
+        if (shuffle) {
             shuffle();
         } else {
             if (songPosition == songList.size() - 1) {
@@ -100,7 +100,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
             } else {
                 songPosition++;
             }
-            if(mediaPlayer.isPlaying()) {
+            if (mediaPlayer.isPlaying()) {
                 start();
             } else {
                 prepared = false;
@@ -108,10 +108,18 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
     }
 
+    public void setLowVolume() {
+        mediaPlayer.setVolume((float) 0.2, (float) 0.2);
+    }
+
+    public void setHighVolume() {
+        mediaPlayer.setVolume(1, 1);
+    }
+
     public void shuffle() {
         Random random = new Random();
         songPosition = random.nextInt(songList.size());
-        if(mediaPlayer.isPlaying()) {
+        if (mediaPlayer.isPlaying()) {
             start();
         } else {
             prepared = false;
@@ -119,7 +127,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     }
 
     public void seekTo(int i) {
-        if(mediaPlayer.isPlaying()) {
+        if (mediaPlayer.isPlaying()) {
             float percentage = (float) i / 100;
             float seek = percentage * mediaPlayer.getDuration();
             mediaPlayer.seekTo((int) seek);
@@ -127,7 +135,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     }
 
     public int getProgress() {
-        if(mediaPlayer.isPlaying()) {
+        if (mediaPlayer.isPlaying()) {
             return (int) ((float) mediaPlayer.getCurrentPosition() / (float) mediaPlayer.getDuration() * 100);
         }
         return 0;
@@ -140,7 +148,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     }
 
     @Override
-    public boolean onUnbind(Intent intent){
+    public boolean onUnbind(Intent intent) {
         mediaPlayer.stop();
         mediaPlayer.release();
         return false;
@@ -166,8 +174,8 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-            next();
-            play();
+        next();
+        play();
     }
 
     @Override

@@ -10,8 +10,10 @@ import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
+import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -31,7 +33,9 @@ import java.util.List;
 
 public class PlayerActivity extends AppCompatActivity {
 
-    private final int REQUEST_READ_EXTERNAL_STORAGE = 1;
+    private static final int SPEECH_REQUEST_CODE = 0;
+    private static final int REQUEST_READ_EXTERNAL_STORAGE = 1;
+
     private List<Song> songList;
     private ProximityHandler proximityHandler;
     private SongFinder songFinder;
@@ -283,6 +287,11 @@ public class PlayerActivity extends AppCompatActivity {
                 setPlayerTitleText();
             }
         }
+
+        @Override
+        public void onLongProximityDetected() {
+            displaySpeechRecognizer();
+        }
     };
 
     @Override
@@ -326,5 +335,46 @@ public class PlayerActivity extends AppCompatActivity {
 
     private void exitApp() {
         this.finishAffinity();
+    }
+
+    private void displaySpeechRecognizer() {
+        if (musicService != null) {
+            musicService.setLowVolume();
+        }
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        startActivityForResult(intent, SPEECH_REQUEST_CODE);
+        new CountDownTimer(8000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+                finishActivity(SPEECH_REQUEST_CODE);
+                if (musicService != null) {
+                    musicService.setHighVolume();
+                }
+            }
+        }.start();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        System.out.println("Je rentre dans le bordel !");
+        if (musicService != null) {
+            musicService.setHighVolume();
+        }
+        if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK) {
+            switch (resultCode) {
+                case RESULT_OK:
+                    List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    String spokenText = results.get(0);
+                    System.out.println(spokenText);
+                    break;
+                default:
+                    System.out.println(resultCode);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

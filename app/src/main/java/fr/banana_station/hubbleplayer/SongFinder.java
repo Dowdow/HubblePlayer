@@ -8,18 +8,18 @@ import android.provider.MediaStore;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SongFinder {
+class SongFinder {
 
     private ContentResolver contentResolver;
     private Cursor cursor;
 
-    public SongFinder(ContentResolver contentResolver) {
+    SongFinder(ContentResolver contentResolver) {
         this.contentResolver = contentResolver;
     }
 
-    public List<Song> find() {
+    List<Song> find() {
         String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
-        final String[] projection = new String[] {
+        final String[] projection = new String[]{
                 MediaStore.Audio.Media._ID,
                 MediaStore.Audio.Media.TITLE,
                 MediaStore.Audio.Media.ARTIST};
@@ -34,7 +34,7 @@ public class SongFinder {
             cursor.moveToFirst();
 
             while (!cursor.isAfterLast()) {
-                songList.add(new Song(cursor.getLong(0),cursor.getString(1),cursor.getString(2)));
+                songList.add(new Song(cursor.getLong(0), cursor.getString(1), cursor.getString(2)));
                 cursor.moveToNext();
             }
         }
@@ -42,11 +42,11 @@ public class SongFinder {
         return songList;
     }
 
-    public Cursor getCursor() {
+    Cursor getCursor() {
         return cursor;
     }
 
-    public void closeCursor() {
+    void closeCursor() {
         if (cursor != null) {
             cursor.close();
         }

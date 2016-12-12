@@ -12,14 +12,14 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class SongAdapter extends BaseAdapter implements SectionIndexer {
+class SongAdapter extends BaseAdapter implements SectionIndexer {
 
     private List<Song> songList;
     private LayoutInflater layoutInflater;
     private AlphabetIndexer alphabetIndexer;
 
 
-    public SongAdapter(Context c, List<Song> songList, Cursor cursor) {
+    SongAdapter(Context c, List<Song> songList, Cursor cursor) {
         this.layoutInflater = LayoutInflater.from(c);
         this.songList = songList;
         this.alphabetIndexer = new AlphabetIndexer(cursor, 1, " ABCDEFGHIJKLMNOPQRSTUVWXYZ");
@@ -44,10 +44,10 @@ public class SongAdapter extends BaseAdapter implements SectionIndexer {
     public View getView(int i, View view, ViewGroup viewGroup) {
         ViewHolder viewHolder;
 
-        if(view == null) {
+        if (view == null) {
             view = layoutInflater.inflate(R.layout.song, viewGroup, false);
             viewHolder = new ViewHolder();
-            viewHolder.title  = (TextView) view.findViewById(R.id.songTitle);
+            viewHolder.title = (TextView) view.findViewById(R.id.songTitle);
             viewHolder.artist = (TextView) view.findViewById(R.id.songArtist);
             view.setTag(viewHolder);
         } else {
@@ -77,7 +77,7 @@ public class SongAdapter extends BaseAdapter implements SectionIndexer {
         return alphabetIndexer.getSectionForPosition(i);
     }
 
-    static class ViewHolder {
+    private static class ViewHolder {
         TextView title;
         TextView artist;
     }

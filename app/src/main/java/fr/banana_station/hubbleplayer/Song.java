@@ -1,12 +1,12 @@
 package fr.banana_station.hubbleplayer;
 
-public class Song {
+class Song {
 
     private long id;
     private String title;
     private String artist;
 
-    public Song(long id, String title, String artist) {
+    Song(long id, String title, String artist) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -16,11 +16,11 @@ public class Song {
         return id;
     }
 
-    public String getTitle() {
+    String getTitle() {
         return title;
     }
 
-    public String getArtist() {
+    String getArtist() {
         return artist;
     }
 

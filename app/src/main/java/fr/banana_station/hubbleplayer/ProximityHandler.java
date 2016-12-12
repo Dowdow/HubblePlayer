@@ -5,25 +5,26 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-public class ProximityHandler implements SensorEventListener{
+class ProximityHandler implements SensorEventListener {
 
     private SensorManager sensorManager;
     private Sensor proximity;
 
     private boolean starting = false;
     private boolean close = false;
+    private long time = 0;
 
-    public ProximityHandler(SensorManager sensorManager) {
+    ProximityHandler(SensorManager sensorManager) {
         this.sensorManager = sensorManager;
         this.proximity = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
     }
 
-    public void start() {
+    void start() {
         starting = true;
         sensorManager.registerListener(this, proximity, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-    public void stop() {
+    void stop() {
         starting = false;
         sensorManager.unregisterListener(this, proximity);
     }
@@ -32,12 +33,16 @@ public class ProximityHandler implements SensorEventListener{
     public void onSensorChanged(SensorEvent sensorEvent) {
         if (sensorEvent.sensor.getType() == Sensor.TYPE_PROXIMITY) {
             float cm = sensorEvent.values[0];
-            //System.out.println(cm);
             if (cm == 0 && !close) {
-                close  = true;
+                time = System.currentTimeMillis();
+                close = true;
             }
             if (cm >= 1 && close) {
-                proximityListener.onProximityDetected();
+                if (System.currentTimeMillis() - time > 1500) {
+                    proximityListener.onLongProximityDetected();
+                } else {
+                    proximityListener.onProximityDetected();
+                }
                 close = false;
             }
         }
@@ -48,17 +53,19 @@ public class ProximityHandler implements SensorEventListener{
 
     }
 
-    public boolean isStarting() {
+    boolean isStarting() {
         return starting;
     }
 
     private ProximityListener proximityListener;
 
-    public void setProximityListener(ProximityListener proximityListener) {
+    void setProximityListener(ProximityListener proximityListener) {
         this.proximityListener = proximityListener;
     }
 
-    public interface ProximityListener {
+    interface ProximityListener {
         void onProximityDetected();
+
+        void onLongProximityDetected();
     }
 }
