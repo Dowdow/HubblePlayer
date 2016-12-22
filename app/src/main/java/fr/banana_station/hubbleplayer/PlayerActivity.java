@@ -52,12 +52,18 @@ public class PlayerActivity extends AppCompatActivity {
     private SeekBar timeBar;
     private TextView playerTitle;
 
+    /**
+     * onCreate
+     *
+     * @param savedInstanceState Bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         System.out.println("======\nCREATE\n======");
         setContentView(R.layout.activity_player);
 
+        //
         songListView = (ListView) findViewById(R.id.songList);
         play = (ImageButton) findViewById(R.id.play);
         RelativeLayout player = (RelativeLayout) findViewById(R.id.player);
@@ -81,6 +87,9 @@ public class PlayerActivity extends AppCompatActivity {
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
+    /**
+     * onStart
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -99,6 +108,9 @@ public class PlayerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * onStop
+     */
     @Override
     protected void onStop() {
         super.onStop();
@@ -106,6 +118,9 @@ public class PlayerActivity extends AppCompatActivity {
         stopRunnable();
     }
 
+    /**
+     * onDestroy
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -126,6 +141,9 @@ public class PlayerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * onBackPressed
+     */
     @Override
     public void onBackPressed() {
         if (playing) {
@@ -135,6 +153,19 @@ public class PlayerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Exit the activity properly
+     */
+    private void exitApp() {
+        this.finishAffinity();
+    }
+
+    /**
+     * Called when the user select a song in the list.
+     * Tell the music service to play the track selected.
+     *
+     * @param view View
+     */
     public void onSongSelected(View view) {
         startRunnable();
         musicService.setSongPosition(view.getId());
@@ -144,6 +175,12 @@ public class PlayerActivity extends AppCompatActivity {
         setPlayerTitleText();
     }
 
+    /**
+     * Called when the user press the previous button.
+     * Tell the music service to play the previous song.
+     *
+     * @param view View
+     */
     public void onSongPrevious(View view) {
         if (musicService != null) {
             musicService.previous();
@@ -151,6 +188,12 @@ public class PlayerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Called when the user press the next button.
+     * Tell the music service to play the new song.
+     *
+     * @param view View
+     */
     public void onSongNext(View view) {
         if (musicService != null) {
             musicService.next();
@@ -158,6 +201,12 @@ public class PlayerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Called when the user the play or pause button.
+     * Tell the music service to play a song or pause it if already playing.
+     *
+     * @param view View
+     */
     public void onPlayPause(View view) {
         if (musicService != null) {
             if (playing) {
@@ -175,33 +224,19 @@ public class PlayerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Set the song title in the title text view.
+     */
     private void setPlayerTitleText() {
         playerTitle.setText(musicService.getSongTitle());
     }
 
-    private Handler handler = new Handler();
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            if (musicConnection && playing) {
-                setPlayerTitleText();
-                timeBar.setProgress(musicService.getProgress());
-            }
-            if (!kill) {
-                handler.postDelayed(this, 500);
-            }
-        }
-    };
-
-    public void startRunnable() {
-        kill = false;
-        runOnUiThread(runnable);
-    }
-
-    public void stopRunnable() {
-        kill = true;
-    }
-
+    /**
+     * Invoke the option menu
+     *
+     * @param menu Menu
+     * @return boolean
+     */
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
         MenuInflater inflater = getMenuInflater();
@@ -209,6 +244,12 @@ public class PlayerActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Event listener for the menu items
+     *
+     * @param item MenuItem
+     * @return boolean
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -238,6 +279,9 @@ public class PlayerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Seek Bar management
+     */
     private SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
 
         private int lastSelected = 0;
@@ -262,6 +306,9 @@ public class PlayerActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * Service connection binding
+     */
     private ServiceConnection serviceConnection = new ServiceConnection() {
 
         @Override
@@ -279,6 +326,9 @@ public class PlayerActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * Proximity Listener
+     */
     private ProximityHandler.ProximityListener proximityListener = new ProximityHandler.ProximityListener() {
         @Override
         public void onProximityDetected() {
@@ -294,6 +344,48 @@ public class PlayerActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * Handler for the runnable
+     */
+    private Handler handler = new Handler();
+    /**
+     * Runnable to manage the seek bar progression
+     */
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            if (musicConnection && playing) {
+                setPlayerTitleText();
+                timeBar.setProgress(musicService.getProgress());
+            }
+            if (!kill) {
+                handler.postDelayed(this, 500);
+            }
+        }
+    };
+
+    /**
+     * Start the seek bar manager runnable
+     */
+    public void startRunnable() {
+        kill = false;
+        runOnUiThread(runnable);
+    }
+
+    /**
+     * Stop the seek bar manager runnable
+     */
+    public void stopRunnable() {
+        kill = true;
+    }
+
+    /**
+     * Callback for permission requests
+     *
+     * @param requestCode  int
+     * @param permissions  String
+     * @param grantResults int
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
@@ -308,6 +400,9 @@ public class PlayerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Call the SongFinder to fill the list of songs.
+     */
     private void fillSongList() {
         songFinder = new SongFinder(getContentResolver());
         songList = songFinder.find();
@@ -320,6 +415,9 @@ public class PlayerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Build and show an Alert when no music were found
+     */
     private void showNoMusicFound() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.no_music_message).setTitle(R.string.no_music_title);
@@ -333,10 +431,9 @@ public class PlayerActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void exitApp() {
-        this.finishAffinity();
-    }
-
+    /**
+     * Display the speech recognition popup
+     */
     private void displaySpeechRecognizer() {
         if (musicService != null) {
             musicService.setLowVolume();
@@ -358,6 +455,12 @@ public class PlayerActivity extends AppCompatActivity {
         }.start();
     }
 
+    /**
+     * Callback from the speech recognition popup
+     * @param requestCode int
+     * @param resultCode int
+     * @param data Intent
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         System.out.println("Je rentre dans le bordel !");

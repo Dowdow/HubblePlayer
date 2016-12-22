@@ -7,28 +7,51 @@ import android.hardware.SensorManager;
 
 class ProximityHandler implements SensorEventListener {
 
+    /**
+     * The sensor manager
+     */
     private SensorManager sensorManager;
+    /**
+     * The proximity sensor
+     */
     private Sensor proximity;
 
+    /** Acquisition state boolean */
     private boolean starting = false;
+    /** Boolean that describe if the user hand was close to the phone before */
     private boolean close = false;
+    /** Time since the hand of the user is close to the proximity sensor */
     private long time = 0;
 
+    /**
+     * @param sensorManager SensorManager
+     */
     ProximityHandler(SensorManager sensorManager) {
         this.sensorManager = sensorManager;
         this.proximity = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
     }
 
+    /**
+     * Start the sensor acquisition
+     */
     void start() {
         starting = true;
         sensorManager.registerListener(this, proximity, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
+    /**
+     * Stop the sensor acquisition
+     */
     void stop() {
         starting = false;
         sensorManager.unregisterListener(this, proximity);
     }
 
+    /**
+     * Callback when sensor datas acquired
+     *
+     * @param sensorEvent SensorEvent
+     */
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if (sensorEvent.sensor.getType() == Sensor.TYPE_PROXIMITY) {
@@ -50,7 +73,6 @@ class ProximityHandler implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
-
     }
 
     boolean isStarting() {
@@ -63,6 +85,7 @@ class ProximityHandler implements SensorEventListener {
         this.proximityListener = proximityListener;
     }
 
+    /** Interface used to emit events in activities */
     interface ProximityListener {
         void onProximityDetected();
 

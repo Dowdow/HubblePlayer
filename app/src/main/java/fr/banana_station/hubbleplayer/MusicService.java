@@ -28,6 +28,9 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     private boolean prepared = false;
     private boolean shuffle = false;
 
+    /**
+     * onCreate
+     */
     @Override
     public void onCreate() {
         super.onCreate();
@@ -41,12 +44,27 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         mediaPlayer.setOnCompletionListener(this);
     }
 
+    /**
+     * onDestroy
+     */
     @Override
     public void onDestroy() {
         mediaPlayer.release();
         stopForeground(true);
     }
 
+    /**
+     * Music Binder
+     */
+    public class MusicBinder extends Binder {
+        MusicService getService() {
+            return MusicService.this;
+        }
+    }
+
+    /**
+     * Load and prepare a song to be played.
+     */
     public void start() {
         mediaPlayer.reset();
         Song song = songList.get(songPosition);
@@ -60,6 +78,9 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         prepared = true;
     }
 
+    /**
+     * Play a song
+     */
     public void play() {
         if (prepared) {
             mediaPlayer.start();
@@ -68,12 +89,18 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
     }
 
+    /**
+     * Pause a song
+     */
     public void pause() {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
         }
     }
 
+    /**
+     * Change the music to the previous one.
+     */
     public void previous() {
         if (shuffle) {
             shuffle();
@@ -91,6 +118,9 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
     }
 
+    /**
+     * Change the music to the next one.
+     */
     public void next() {
         if (shuffle) {
             shuffle();
@@ -108,14 +138,23 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
     }
 
+    /**
+     * Low down the volume for voice recognition
+     */
     public void setLowVolume() {
         mediaPlayer.setVolume((float) 0.2, (float) 0.2);
     }
 
+    /**
+     * Max the volume after voice recognition
+     */
     public void setHighVolume() {
         mediaPlayer.setVolume(1, 1);
     }
 
+    /**
+     * Change to a random song
+     */
     public void shuffle() {
         Random random = new Random();
         songPosition = random.nextInt(songList.size());
@@ -126,6 +165,11 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
     }
 
+    /**
+     * Seek a given part of the song
+     *
+     * @param i int
+     */
     public void seekTo(int i) {
         if (mediaPlayer.isPlaying()) {
             float percentage = (float) i / 100;
@@ -134,6 +178,11 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         }
     }
 
+    /**
+     * Return the time progression of the song.
+     *
+     * @return int
+     */
     public int getProgress() {
         if (mediaPlayer.isPlaying()) {
             return (int) ((float) mediaPlayer.getCurrentPosition() / (float) mediaPlayer.getDuration() * 100);
@@ -141,12 +190,24 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         return 0;
     }
 
+    /**
+     * Callback when the service is binded.
+     *
+     * @param intent Intent
+     * @return IBinder
+     */
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return iBinder;
     }
 
+    /**
+     * Callback when the service is unbinded.
+     *
+     * @param intent Intent
+     * @return boolean
+     */
     @Override
     public boolean onUnbind(Intent intent) {
         mediaPlayer.stop();
@@ -154,6 +215,11 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         return false;
     }
 
+    /**
+     * Callback when a song is fully loaded.
+     *
+     * @param mediaPlayer MediaPlayer
+     */
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         Intent intent = new Intent(this, PlayerActivity.class);
@@ -172,17 +238,32 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         mediaPlayer.start();
     }
 
+    /**
+     * Callback when a song is ended.
+     *
+     * @param mediaPlayer MediaPlayer
+     */
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
         next();
         play();
     }
 
+    /**
+     * Callback when an error occurs
+     *
+     * @param mediaPlayer MediaPlayer
+     * @param i           int
+     * @param i1          int
+     * @return boolean
+     */
     @Override
     public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
         mediaPlayer.reset();
         return false;
     }
+
+    /* GETTERS AND SETTERS */
 
     public void setSongList(List<Song> songList) {
         this.songList = songList;
@@ -202,11 +283,5 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
 
     public String getSongTitle() {
         return songList.get(songPosition).getTitle() + " - " + songList.get(songPosition).getArtist();
-    }
-
-    public class MusicBinder extends Binder {
-        MusicService getService() {
-            return MusicService.this;
-        }
     }
 }
