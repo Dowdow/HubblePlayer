@@ -457,9 +457,10 @@ public class PlayerActivity extends AppCompatActivity {
 
     /**
      * Callback from the speech recognition popup
+     *
      * @param requestCode int
-     * @param resultCode int
-     * @param data Intent
+     * @param resultCode  int
+     * @param data        Intent
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -473,6 +474,9 @@ public class PlayerActivity extends AppCompatActivity {
                     List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     String spokenText = results.get(0);
                     System.out.println(spokenText);
+                    if (musicService != null) {
+                        musicService.findSong(spokenText);
+                    }
                     break;
                 default:
                     System.out.println(resultCode);

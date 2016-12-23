@@ -15,8 +15,11 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MusicService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
 
@@ -142,14 +145,22 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
      * Low down the volume for voice recognition
      */
     public void setLowVolume() {
-        mediaPlayer.setVolume((float) 0.2, (float) 0.2);
+        try {
+            mediaPlayer.setVolume((float) 0.2, (float) 0.2);
+        } catch (IllegalStateException e) {
+            System.out.println("Can't switch volume, app is closed");
+        }
     }
 
     /**
      * Max the volume after voice recognition
      */
     public void setHighVolume() {
-        mediaPlayer.setVolume(1, 1);
+        try {
+            mediaPlayer.setVolume(1, 1);
+        } catch (IllegalStateException e) {
+            System.out.println("Can't switch volume, app is closed");
+        }
     }
 
     /**
@@ -162,6 +173,55 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
             start();
         } else {
             prepared = false;
+        }
+    }
+
+    /**
+     * Try to find a song play it.
+     *
+     * @param search String
+     */
+    public void findSong(String search) {
+        List<Song> matchSongs = new ArrayList<>();
+        search = search.toLowerCase();
+        // Split to match every words
+        String[] pattern = search.split(" ");
+        for (Song song : songList) {
+            int matches = 0;
+            for (String word : pattern) {
+                Pattern p = Pattern.compile(".*" + word + ".*");
+                Matcher m = p.matcher((song.getTitle() + " " + song.getArtist()).toLowerCase());
+                if (m.matches()) {
+                    matches++;
+                }
+            }
+            if (matches == pattern.length) {
+                matchSongs.add(song);
+            }
+        }
+        // Match the best based on Levenstein Distance
+        Song bestMatch = null;
+        int minimumDistance = 0;
+        for (Song song : matchSongs) {
+            String title = (song.getTitle() + " " + song.getArtist()).toLowerCase();
+            if (bestMatch == null) {
+                bestMatch = song;
+                minimumDistance = LevenshteinDistance.compute(search, title);
+            } else {
+                int tempDistance = LevenshteinDistance.compute(search, title);
+                if (tempDistance < minimumDistance) {
+                    bestMatch = song;
+                    minimumDistance = tempDistance;
+                }
+            }
+        }
+        if (bestMatch != null) {
+            songPosition = songList.indexOf(bestMatch);
+            if (mediaPlayer.isPlaying()) {
+                start();
+            } else {
+                prepared = false;
+            }
         }
     }
 
