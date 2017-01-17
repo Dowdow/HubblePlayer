@@ -1,6 +1,8 @@
 package fr.banana_station.hubbleplayer;
 
 import android.Manifest;
+import android.app.KeyguardManager;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,10 +11,12 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -23,6 +27,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -63,7 +68,6 @@ public class PlayerActivity extends AppCompatActivity {
         System.out.println("======\nCREATE\n======");
         setContentView(R.layout.activity_player);
 
-        //
         songListView = (ListView) findViewById(R.id.songList);
         play = (ImageButton) findViewById(R.id.play);
         RelativeLayout player = (RelativeLayout) findViewById(R.id.player);
@@ -85,6 +89,7 @@ public class PlayerActivity extends AppCompatActivity {
         proximityHandler.start();
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
     }
 
     /**
@@ -438,9 +443,25 @@ public class PlayerActivity extends AppCompatActivity {
         if (musicService != null) {
             musicService.setLowVolume();
         }
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+
+        Intent intent;
+        KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        if (!powerManager.isInteractive() || keyguardManager.inKeyguardRestrictedInputMode()) {
+            intent = new Intent(RecognizerIntent.ACTION_VOICE_SEARCH_HANDS_FREE);
+            intent.putExtra(RecognizerIntent.EXTRA_SECURE, true);
+        } else {
+            intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        }
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        startActivityForResult(intent, SPEECH_REQUEST_CODE);
+
+        try {
+            startActivityForResult(intent, SPEECH_REQUEST_CODE);
+        } catch (ActivityNotFoundException e) {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.google.android.googlequicksearchbox"));
+            startActivity(browserIntent);
+        }
+
         new CountDownTimer(8000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -464,7 +485,6 @@ public class PlayerActivity extends AppCompatActivity {
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        System.out.println("Je rentre dans le bordel !");
         if (musicService != null) {
             musicService.setHighVolume();
         }
@@ -473,13 +493,10 @@ public class PlayerActivity extends AppCompatActivity {
                 case RESULT_OK:
                     List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     String spokenText = results.get(0);
-                    System.out.println(spokenText);
                     if (musicService != null) {
                         musicService.findSong(spokenText);
                     }
                     break;
-                default:
-                    System.out.println(resultCode);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);

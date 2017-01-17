@@ -146,7 +146,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
      */
     public void setLowVolume() {
         try {
-            mediaPlayer.setVolume((float) 0.2, (float) 0.2);
+            mediaPlayer.setVolume((float) 0.05, (float) 0.05);
         } catch (IllegalStateException e) {
             System.out.println("Can't switch volume, app is closed");
         }
