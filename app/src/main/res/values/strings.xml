@@ -4,11 +4,17 @@
 
     <string name="ok">OK</string>
     <string name="play">Play</string>
+    <string name="previous">Previous</string>
+    <string name="play_pause">Play/Pause</string>
+    <string name="next">Next</string>
     <string name="shuffle_on">Shuffle On</string>
     <string name="shuffle_off">Shuffle Off</string>
     <string name="proximity_on">Proximity On</string>
     <string name="proximity_off">Proximity Off</string>
 
     <string name="no_music_title">No music found</string>
-    <string name="no_music_message">No music was found on your device</string>
+    <string name="no_music_message">No music was found on your device.</string>
+
+    <string name="no_proximity_title">No proximity sensor found</string>
+    <string name="no_proximity_message">Your device does not have a proximity sensor. You cannot change your music with hand gestures.</string>
 </resources>

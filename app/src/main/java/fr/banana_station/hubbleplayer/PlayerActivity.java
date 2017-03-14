@@ -5,7 +5,6 @@ import android.app.KeyguardManager;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
@@ -84,6 +83,10 @@ public class PlayerActivity extends AppCompatActivity {
             fillSongList();
         }
 
+        PackageManager packageManager = this.getPackageManager();
+        if (!packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_PROXIMITY)) {
+            showNoProximitySensor();
+        }
         proximityHandler = new ProximityHandler((SensorManager) getSystemService(Context.SENSOR_SERVICE));
         proximityHandler.setProximityListener(proximityListener);
         proximityHandler.start();
@@ -426,12 +429,18 @@ public class PlayerActivity extends AppCompatActivity {
     private void showNoMusicFound() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.no_music_message).setTitle(R.string.no_music_title);
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                exitApp();
-            }
-        });
+        builder.setPositiveButton(R.string.ok, null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    /**
+     * Build and show an Alert when the device does not have a proximity sensor
+     */
+    private void showNoProximitySensor() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.no_proximity_message).setTitle(R.string.no_proximity_title);
+        builder.setPositiveButton(R.string.ok, null);
         AlertDialog dialog = builder.create();
         dialog.show();
     }

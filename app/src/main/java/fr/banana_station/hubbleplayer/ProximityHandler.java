@@ -16,11 +16,17 @@ class ProximityHandler implements SensorEventListener {
      */
     private Sensor proximity;
 
-    /** Acquisition state boolean */
+    /**
+     * Acquisition state boolean
+     */
     private boolean starting = false;
-    /** Boolean that describe if the user hand was close to the phone before */
+    /**
+     * Boolean that describe if the user hand was close to the phone before
+     */
     private boolean close = false;
-    /** Time since the hand of the user is close to the proximity sensor */
+    /**
+     * Time since the hand of the user is close to the proximity sensor
+     */
     private long time = 0;
 
     /**
@@ -36,7 +42,10 @@ class ProximityHandler implements SensorEventListener {
      */
     void start() {
         starting = true;
-        sensorManager.registerListener(this, proximity, SensorManager.SENSOR_DELAY_NORMAL);
+        boolean supported = sensorManager.registerListener(this, proximity, SensorManager.SENSOR_DELAY_NORMAL);
+        if (!supported) {
+
+        }
     }
 
     /**
@@ -85,7 +94,9 @@ class ProximityHandler implements SensorEventListener {
         this.proximityListener = proximityListener;
     }
 
-    /** Interface used to emit events in activities */
+    /**
+     * Interface used to emit events in activities
+     */
     interface ProximityListener {
         void onProximityDetected();
 

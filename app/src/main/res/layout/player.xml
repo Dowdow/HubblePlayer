@@ -18,7 +18,8 @@
         android:id="@+id/previous"
         android:src="@drawable/next"
         android:rotation="180"
-        android:onClick="onSongPrevious" />
+        android:onClick="onSongPrevious"
+        android:contentDescription="@string/previous" />
 
     <ImageButton
         android:layout_width="40dp"
@@ -28,7 +29,8 @@
         android:background="@drawable/rounded_corner"
         android:id="@+id/play"
         android:src="@drawable/play"
-        android:onClick="onPlayPause" />
+        android:onClick="onPlayPause"
+        android:contentDescription="@string/play_pause" />
 
     <ImageButton
         android:layout_width="40dp"
@@ -38,7 +40,8 @@
         android:background="@drawable/rounded_corner"
         android:id="@+id/next"
         android:src="@drawable/next"
-        android:onClick="onSongNext" />
+        android:onClick="onSongNext"
+        android:contentDescription="@string/next" />
 
     <SeekBar
         android:layout_width="wrap_content"

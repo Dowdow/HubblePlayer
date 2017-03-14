@@ -6,23 +6,24 @@
     tools:context=".PlayerActivity">
 
     <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
         android:id="@+id/songList"
-        android:fastScrollEnabled="true"
-        android:fastScrollAlwaysVisible="true"
-        android:scrollbarStyle="outsideInset"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/player"
         android:layout_centerHorizontal="true"
-        android:layout_above="@+id/player" />
+        android:fastScrollAlwaysVisible="true"
+        android:fastScrollEnabled="true"
+        android:paddingEnd="@dimen/activity_horizontal_margin"
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:scrollbarStyle="outsideInset" />
 
     <include
+        android:id="@+id/player"
+        layout="@layout/player"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        layout="@layout/player"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/player" />
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>
