@@ -59,7 +59,7 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
     /**
      * Music Binder
      */
-    public class MusicBinder extends Binder {
+    class MusicBinder extends Binder {
         MusicService getService() {
             return MusicService.this;
         }
@@ -75,10 +75,14 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         try {
             mediaPlayer.setDataSource(getApplicationContext(), uri);
         } catch (IOException e) {
+            Log.e("Music Service", "Error while try to get the song");
+        }
+        try {
+            mediaPlayer.prepareAsync();
+            prepared = true;
+        } catch (Exception ignored) {
             Log.e("Music Service", "Error while try to read the song");
         }
-        mediaPlayer.prepareAsync();
-        prepared = true;
     }
 
     /**

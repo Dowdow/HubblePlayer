@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
@@ -16,6 +17,7 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -66,6 +68,8 @@ public class PlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         System.out.println("======\nCREATE\n======");
         setContentView(R.layout.activity_player);
+
+        showIntro();
 
         songListView = (ListView) findViewById(R.id.songList);
         play = (ImageButton) findViewById(R.id.play);
@@ -166,6 +170,22 @@ public class PlayerActivity extends AppCompatActivity {
      */
     private void exitApp() {
         this.finishAffinity();
+    }
+
+    /**
+     * Show the Intro the first time the app is launched
+     */
+    private void showIntro() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        boolean isFirstStart = preferences.getBoolean("firstStart", true);
+        if (isFirstStart) {
+            Intent intent = new Intent(PlayerActivity.this, Intro.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            startActivity(intent);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("firstStart", true);
+            editor.apply();
+        }
     }
 
     /**

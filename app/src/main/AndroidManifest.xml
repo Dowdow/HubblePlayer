@@ -26,6 +26,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".Intro"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
         <service android:name=".MusicService" />
     </application>
 

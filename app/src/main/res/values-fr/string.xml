@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HubblePlayer</string>
+    <string name="app_name_clean">Hubble Player</string>
+
+    <string name="intro_title_1">Bienvenue dans Hubble Player !</string>
+    <string name="intro_description_1">Ici vous pouvez écouter votre musique avec quelques fonctionnalités en plus …</string>
+    <string name="intro_title_2">Changez votre musique d\'un simple geste de la main</string>
+    <string name="intro_description_2">Si votre appareil possède un capteur de proximité, vous pouvez changer votre musique en passant la main devant.</string>
+    <string name="intro_title_3">Utilisez la reconnaissance vocale</string>
+    <string name="intro_description_3">Si vous voulez un morceau spécifique, maintenez vorte main au dessus du capteur de proximité et une fenêtre apparaîtra.</string>
+
+    <string name="ok">OK</string>
+    <string name="play">Play</string>
+    <string name="previous">Précédent</string>
+    <string name="play_pause">Play/Pause</string>
+    <string name="next">Suivant</string>
+    <string name="shuffle_on">Activer la lecture aléatoire</string>
+    <string name="shuffle_off">Désactiver la lecture aléatoire</string>
+    <string name="proximity_on">Activer le capteur de proximité</string>
+    <string name="proximity_off">Désactiver le capteur de proximité</string>
+
+    <string name="no_music_title">Aucune musique trouvée</string>
+    <string name="no_music_message">Aucune musique n\'a été trouvée sur votre appareil.</string>
+
+    <string name="no_proximity_title">Aucune capteur de proximité detecté</string>
+    <string name="no_proximity_message">Votre appareil ne possède pas de capteur de proximité. Vous ne pourrez pas changer votre musique avec des gestes de la main.</string>
+</resources>
