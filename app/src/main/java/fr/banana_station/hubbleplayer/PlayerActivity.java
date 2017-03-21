@@ -106,14 +106,12 @@ public class PlayerActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         System.out.println("=====\nSTART\n=====");
-
         if (authorised) {
             if (intent == null) {
                 intent = new Intent(this, MusicService.class);
                 bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
                 startService(intent);
             }
-
             if (playing) {
                 startRunnable();
             }
@@ -176,16 +174,22 @@ public class PlayerActivity extends AppCompatActivity {
      * Show the Intro the first time the app is launched
      */
     private void showIntro() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        boolean isFirstStart = preferences.getBoolean("firstStart", true);
-        if (isFirstStart) {
-            Intent intent = new Intent(PlayerActivity.this, Intro.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            startActivity(intent);
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putBoolean("firstStart", true);
-            editor.apply();
-        }
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                boolean isFirstStart = preferences.getBoolean("firstStart", true);
+                if (isFirstStart) {
+                    Intent intent = new Intent(PlayerActivity.this, Intro.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    startActivity(intent);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean("firstStart", false);
+                    editor.apply();
+                }
+            }
+        });
+        t.start();
     }
 
     /**
