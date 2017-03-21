@@ -15,19 +15,19 @@ public class Intro extends AppIntro2 {
         addSlide(AppIntro2Fragment.newInstance(
                 getResources().getString(R.string.intro_title_1),
                 getResources().getString(R.string.intro_description_1),
-                R.drawable.vinyl,
+                R.drawable.intro1,
                 getResources().getColor(R.color.colorPrimary)
         ));
         addSlide(AppIntro2Fragment.newInstance(
                 getResources().getString(R.string.intro_title_2),
                 getResources().getString(R.string.intro_description_2),
-                R.drawable.vinyl,
+                R.drawable.intro2,
                 getResources().getColor(R.color.colorPrimary)
         ));
         addSlide(AppIntro2Fragment.newInstance(
                 getResources().getString(R.string.intro_title_3),
                 getResources().getString(R.string.intro_description_3),
-                R.drawable.vinyl,
+                R.drawable.intro3,
                 getResources().getColor(R.color.colorPrimary)
         ));
         showStatusBar(false);
