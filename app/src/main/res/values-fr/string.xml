@@ -20,8 +20,7 @@
     <string name="proximity_on">Activer le capteur de proximité</string>
     <string name="proximity_off">Désactiver le capteur de proximité</string>
 
-    <string name="no_music_title">Aucune musique trouvée</string>
-    <string name="no_music_message">Aucune musique n\'a été trouvée sur votre appareil.</string>
+    <string name="no_music">Aucune musique n\'a été trouvée sur votre appareil.</string>
 
     <string name="no_proximity_title">Aucune capteur de proximité detecté</string>
     <string name="no_proximity_message">Votre appareil ne possède pas de capteur de proximité. Vous ne pourrez pas changer votre musique avec des gestes de la main.</string>

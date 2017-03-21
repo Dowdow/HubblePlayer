@@ -30,6 +30,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -57,6 +58,7 @@ public class PlayerActivity extends AppCompatActivity {
     private Menu menu;
     private SeekBar timeBar;
     private TextView playerTitle;
+    private ImageView emptyImage;
 
     /**
      * onCreate
@@ -73,6 +75,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         songListView = (ListView) findViewById(R.id.songList);
         play = (ImageButton) findViewById(R.id.play);
+        emptyImage = (ImageView) findViewById(R.id.emptyImage);
         RelativeLayout player = (RelativeLayout) findViewById(R.id.player);
         timeBar = (SeekBar) player.findViewById(R.id.timeBar);
         timeBar.setOnSeekBarChangeListener(seekBarChangeListener);
@@ -443,19 +446,8 @@ public class PlayerActivity extends AppCompatActivity {
         if (songList.size() > 0) {
             authorised = true;
         } else {
-            showNoMusicFound();
+            emptyImage.setVisibility(View.VISIBLE);
         }
-    }
-
-    /**
-     * Build and show an Alert when no music were found
-     */
-    private void showNoMusicFound() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.no_music_message).setTitle(R.string.no_music_title);
-        builder.setPositiveButton(R.string.ok, null);
-        AlertDialog dialog = builder.create();
-        dialog.show();
     }
 
     /**

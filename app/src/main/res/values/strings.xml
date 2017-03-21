@@ -20,8 +20,7 @@
     <string name="proximity_on">Enable proximity sensor</string>
     <string name="proximity_off">Disable proximity sensor</string>
 
-    <string name="no_music_title">No music found</string>
-    <string name="no_music_message">No music was found on your device.</string>
+    <string name="no_music">No music was found on your device.</string>
 
     <string name="no_proximity_title">No proximity sensor detected</string>
     <string name="no_proximity_message">Your device does not have a proximity sensor. You cannot change your music with hand gestures.</string>
