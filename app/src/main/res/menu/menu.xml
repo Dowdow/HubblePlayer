@@ -9,4 +9,12 @@
         android:id="@+id/proximity"
         android:title="@string/proximity_off" />
 
+    <item
+        android:id="@+id/vocal"
+        android:title="@string/vocal_off" />
+
+    <item
+        android:id="@+id/tutorial"
+        android:title="@string/show_tutorial"/>
+
 </menu>

@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -28,7 +27,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -68,10 +66,9 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        System.out.println("======\nCREATE\n======");
         setContentView(R.layout.activity_player);
 
-        showIntro();
+        showIntro(false);
 
         songListView = (ListView) findViewById(R.id.songList);
         play = (ImageButton) findViewById(R.id.play);
@@ -96,10 +93,11 @@ public class PlayerActivity extends AppCompatActivity {
         }
         proximityHandler = new ProximityHandler((SensorManager) getSystemService(Context.SENSOR_SERVICE));
         proximityHandler.setProximityListener(proximityListener);
-        proximityHandler.start();
+        if (PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getBoolean(getString(R.string.preference_proximity), true)) {
+            proximityHandler.start();
+        }
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
     }
 
     /**
@@ -108,7 +106,6 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        System.out.println("=====\nSTART\n=====");
         if (authorised) {
             if (intent == null) {
                 intent = new Intent(this, MusicService.class);
@@ -127,7 +124,6 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        System.out.println("====\nSTOP\n====");
         stopRunnable();
     }
 
@@ -137,7 +133,6 @@ public class PlayerActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        System.out.println("=======\nDESTROY\n=======");
         if (songFinder != null) {
             songFinder.closeCursor();
         }
@@ -175,19 +170,21 @@ public class PlayerActivity extends AppCompatActivity {
 
     /**
      * Show the Intro the first time the app is launched
+     *
+     * @param bypass boolean
      */
-    private void showIntro() {
+    private void showIntro(final boolean bypass) {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-                boolean isFirstStart = preferences.getBoolean("firstStart", true);
-                if (isFirstStart) {
+                boolean isFirstStart = preferences.getBoolean(getString(R.string.preference_first_start), true);
+                if (isFirstStart || bypass) {
                     Intent intent = new Intent(PlayerActivity.this, Intro.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivity(intent);
                     SharedPreferences.Editor editor = preferences.edit();
-                    editor.putBoolean("firstStart", false);
+                    editor.putBoolean(getString(R.string.preference_first_start), false);
                     editor.apply();
                 }
             }
@@ -276,6 +273,25 @@ public class PlayerActivity extends AppCompatActivity {
         this.menu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        // Saved shuffle parameter
+        if (!preferences.getBoolean(getString(R.string.preference_shuffle), false)) {
+            menu.findItem(R.id.shuffle).setTitle(R.string.shuffle_on);
+        } else {
+            menu.findItem(R.id.shuffle).setTitle(R.string.shuffle_off);
+        }
+        // Saved proximity parameter
+        if (preferences.getBoolean(getString(R.string.preference_proximity), true)) {
+            menu.findItem(R.id.proximity).setTitle(R.string.proximity_off);
+        } else {
+            menu.findItem(R.id.proximity).setTitle(R.string.proximity_on);
+        }
+        // Saved vocal parameter
+        if (preferences.getBoolean(getString(R.string.preference_vocal), true)) {
+            menu.findItem(R.id.vocal).setTitle(R.string.vocal_off);
+        } else {
+            menu.findItem(R.id.vocal).setTitle(R.string.vocal_on);
+        }
         return true;
     }
 
@@ -287,31 +303,53 @@ public class PlayerActivity extends AppCompatActivity {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        SharedPreferences.Editor editor = preferences.edit();
         switch (item.getItemId()) {
             case R.id.shuffle:
                 if (musicService != null) {
                     if (musicService.isShuffle()) {
                         musicService.setShuffle(false);
+                        editor.putBoolean(getString(R.string.preference_shuffle), false);
                         menu.findItem(R.id.shuffle).setTitle(R.string.shuffle_on);
                     } else {
                         musicService.setShuffle(true);
+                        editor.putBoolean(getString(R.string.preference_shuffle), true);
                         menu.findItem(R.id.shuffle).setTitle(R.string.shuffle_off);
                     }
+                    editor.apply();
                     return true;
                 }
                 return false;
             case R.id.proximity:
                 if (proximityHandler.isStarting()) {
                     proximityHandler.stop();
+                    editor.putBoolean(getString(R.string.preference_proximity), false);
                     menu.findItem(R.id.proximity).setTitle(R.string.proximity_on);
                 } else {
                     proximityHandler.start();
+                    editor.putBoolean(getString(R.string.preference_proximity), true);
                     menu.findItem(R.id.proximity).setTitle(R.string.proximity_off);
                 }
+                editor.apply();
                 return true;
+            case R.id.vocal:
+                if (preferences.getBoolean(getString(R.string.preference_vocal), true)) {
+                    editor.putBoolean(getString(R.string.preference_vocal), false);
+                    menu.findItem(R.id.vocal).setTitle(R.string.vocal_on);
+                } else {
+                    editor.putBoolean(getString(R.string.preference_vocal), true);
+                    menu.findItem(R.id.vocal).setTitle(R.string.vocal_off);
+                }
+                editor.apply();
+                return true;
+            case R.id.tutorial:
+                showIntro(true);
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
+        return false;
     }
 
     /**
@@ -353,6 +391,12 @@ public class PlayerActivity extends AppCompatActivity {
             musicService.setSongList(songList);
             musicConnection = true;
             setPlayerTitleText();
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            if (!preferences.getBoolean(getString(R.string.preference_shuffle), false)) {
+                musicService.setShuffle(false);
+            } else {
+                musicService.setShuffle(true);
+            }
         }
 
         @Override
@@ -375,7 +419,17 @@ public class PlayerActivity extends AppCompatActivity {
 
         @Override
         public void onLongProximityDetected() {
-            displaySpeechRecognizer();
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            if (preferences.getBoolean(getString(R.string.preference_vocal), true)) {
+                displaySpeechRecognizer();
+            } else {
+                onProximityDetected();
+            }
+        }
+
+        @Override
+        public void onProximityNotSupported() {
+            showNoProximitySensor();
         }
     };
 
@@ -465,40 +519,33 @@ public class PlayerActivity extends AppCompatActivity {
      * Display the speech recognition popup
      */
     private void displaySpeechRecognizer() {
-        if (musicService != null) {
-            musicService.setLowVolume();
-        }
-
         Intent intent;
         KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
         PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        if (!powerManager.isInteractive() || keyguardManager.inKeyguardRestrictedInputMode()) {
-            intent = new Intent(RecognizerIntent.ACTION_VOICE_SEARCH_HANDS_FREE);
-            intent.putExtra(RecognizerIntent.EXTRA_SECURE, true);
-        } else {
+        if (powerManager.isInteractive() && !keyguardManager.inKeyguardRestrictedInputMode()) {
             intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        }
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-
-        try {
-            startActivityForResult(intent, SPEECH_REQUEST_CODE);
-        } catch (ActivityNotFoundException e) {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.google.android.googlequicksearchbox"));
-            startActivity(browserIntent);
-        }
-
-        new CountDownTimer(8000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            if (musicService != null) {
+                musicService.setLowVolume();
+            }
+            try {
+                startActivityForResult(intent, SPEECH_REQUEST_CODE);
+            } catch (ActivityNotFoundException ignored) {
             }
 
-            public void onFinish() {
-                finishActivity(SPEECH_REQUEST_CODE);
-                if (musicService != null) {
-                    musicService.setHighVolume();
+            new CountDownTimer(8000, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
                 }
-            }
-        }.start();
+
+                public void onFinish() {
+                    finishActivity(SPEECH_REQUEST_CODE);
+                    if (musicService != null) {
+                        musicService.setHighVolume();
+                    }
+                }
+            }.start();
+        }
     }
 
     /**

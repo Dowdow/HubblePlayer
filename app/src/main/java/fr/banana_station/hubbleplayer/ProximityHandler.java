@@ -44,7 +44,7 @@ class ProximityHandler implements SensorEventListener {
         starting = true;
         boolean supported = sensorManager.registerListener(this, proximity, SensorManager.SENSOR_DELAY_NORMAL);
         if (!supported) {
-
+            proximityListener.onProximityNotSupported();
         }
     }
 
@@ -101,5 +101,7 @@ class ProximityHandler implements SensorEventListener {
         void onProximityDetected();
 
         void onLongProximityDetected();
+
+        void onProximityNotSupported();
     }
 }
