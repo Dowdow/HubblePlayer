@@ -33,4 +33,7 @@
 
     <string name="no_proximity_title">No proximity sensor detected</string>
     <string name="no_proximity_message">Your device does not have a proximity sensor. You cannot change your music with hand gestures.</string>
+
+    <string name="headphones_plug">Headphones plugged</string>
+    <string name="headphones_unplug">Headphones unplugged</string>
 </resources>

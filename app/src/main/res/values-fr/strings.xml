@@ -28,4 +28,7 @@
 
     <string name="no_proximity_title">Aucune capteur de proximité detecté</string>
     <string name="no_proximity_message">Votre appareil ne possède pas de capteur de proximité. Vous ne pourrez pas changer votre musique avec des gestes de la main.</string>
+
+    <string name="headphones_plug">Casque branché</string>
+    <string name="headphones_unplug">Casque débranché</string>
 </resources>

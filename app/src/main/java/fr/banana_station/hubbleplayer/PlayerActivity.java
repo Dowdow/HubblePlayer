@@ -6,6 +6,7 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -23,6 +24,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,6 +35,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -45,6 +48,7 @@ public class PlayerActivity extends AppCompatActivity {
     private ProximityHandler proximityHandler;
     private SongFinder songFinder;
     private MusicService musicService;
+    private MusicIntentReceiver musicIntentReceiver;
     private Intent intent;
     private boolean musicConnection = false;
     private boolean playing = false;
@@ -97,6 +101,11 @@ public class PlayerActivity extends AppCompatActivity {
             proximityHandler.start();
         }
 
+        musicIntentReceiver = new MusicIntentReceiver();
+        musicIntentReceiver.setMusicIntentListener(musicIntentListener);
+        IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
+        registerReceiver(musicIntentReceiver, filter);
+
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
@@ -147,6 +156,7 @@ public class PlayerActivity extends AppCompatActivity {
         if (intent != null) {
             stopService(intent);
         }
+        unregisterReceiver(musicIntentReceiver);
     }
 
     /**
@@ -430,6 +440,32 @@ public class PlayerActivity extends AppCompatActivity {
         @Override
         public void onProximityNotSupported() {
             showNoProximitySensor();
+        }
+    };
+
+    private MusicIntentReceiver.MusicIntentListener musicIntentListener = new MusicIntentReceiver.MusicIntentListener() {
+        @Override
+        public void onHeadsetPlug() {
+            if (musicService != null && playing) {
+                Toast toast = Toast.makeText(PlayerActivity.this, getString(R.string.headphones_plug), Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
+                toast.show();
+            }
+        }
+
+        @Override
+        public void onHeadsetUnplug() {
+            if (musicService != null && playing) {
+                Toast toast = Toast.makeText(PlayerActivity.this, getString(R.string.headphones_unplug), Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0);
+                toast.show();
+
+                playing = false;
+                stopRunnable();
+                musicService.pause();
+                play.setImageResource(R.drawable.play);
+                setPlayerTitleText();
+            }
         }
     };
 
