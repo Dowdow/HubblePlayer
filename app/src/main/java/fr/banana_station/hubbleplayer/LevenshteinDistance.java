@@ -1,6 +1,6 @@
 package fr.banana_station.hubbleplayer;
 
-public class LevenshteinDistance {
+class LevenshteinDistance {
 
     /**
      * Return the minimum between the three given values
@@ -21,7 +21,7 @@ public class LevenshteinDistance {
      * @param rhs String
      * @return int
      */
-    public static int compute(CharSequence lhs, CharSequence rhs) {
+    static int compute(CharSequence lhs, CharSequence rhs) {
         int[][] distance = new int[lhs.length() + 1][rhs.length() + 1];
 
         for (int i = 0; i <= lhs.length(); i++)
