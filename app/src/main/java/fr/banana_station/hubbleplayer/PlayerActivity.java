@@ -78,9 +78,9 @@ public class PlayerActivity extends AppCompatActivity {
         play = (ImageButton) findViewById(R.id.play);
         emptyImage = (ImageView) findViewById(R.id.emptyImage);
         RelativeLayout player = (RelativeLayout) findViewById(R.id.player);
-        timeBar = (SeekBar) player.findViewById(R.id.timeBar);
+        timeBar = player.findViewById(R.id.timeBar);
         timeBar.setOnSeekBarChangeListener(seekBarChangeListener);
-        playerTitle = (TextView) player.findViewById(R.id.playerTitle);
+        playerTitle = player.findViewById(R.id.playerTitle);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {

@@ -47,8 +47,8 @@ class SongAdapter extends BaseAdapter implements SectionIndexer {
         if (view == null) {
             view = layoutInflater.inflate(R.layout.song, viewGroup, false);
             viewHolder = new ViewHolder();
-            viewHolder.title = (TextView) view.findViewById(R.id.songTitle);
-            viewHolder.artist = (TextView) view.findViewById(R.id.songArtist);
+            viewHolder.title = view.findViewById(R.id.songTitle);
+            viewHolder.artist = view.findViewById(R.id.songArtist);
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) view.getTag();
