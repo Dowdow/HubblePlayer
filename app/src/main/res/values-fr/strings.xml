@@ -16,12 +16,9 @@
     <string name="play_pause">Play/Pause</string>
     <string name="next">Suivant</string>
 
-    <string name="shuffle_on">Activer la lecture aléatoire</string>
-    <string name="shuffle_off">Désactiver la lecture aléatoire</string>
-    <string name="proximity_on">Activer le capteur de proximité</string>
-    <string name="proximity_off">Désactiver le capteur de proximité</string>
-    <string name="vocal_on">Activer la reconnaissance vocale</string>
-    <string name="vocal_off">Désactiver la reconnaissance vocale</string>
+    <string name="shuffle">Lecture aléatoire</string>
+    <string name="proximity">Capteur de proximité</string>
+    <string name="vocal">Reconnaissance vocale</string>
     <string name="show_tutorial">Ouvrir le tutoriel</string>
 
     <string name="no_music">Aucune musique n\'a été trouvée sur votre appareil.</string>
