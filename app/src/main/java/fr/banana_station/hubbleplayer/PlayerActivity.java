@@ -280,27 +280,28 @@ public class PlayerActivity extends AppCompatActivity {
      * @return boolean
      */
     public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
         this.menu = menu;
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         // Saved shuffle parameter
         if (!preferences.getBoolean(getString(R.string.preference_shuffle), false)) {
-            menu.findItem(R.id.shuffle).setTitle(R.string.shuffle_on);
+            menu.findItem(R.id.shuffle).setChecked(false);
         } else {
-            menu.findItem(R.id.shuffle).setTitle(R.string.shuffle_off);
+            menu.findItem(R.id.shuffle).setChecked(true);
         }
         // Saved proximity parameter
         if (preferences.getBoolean(getString(R.string.preference_proximity), true)) {
-            menu.findItem(R.id.proximity).setTitle(R.string.proximity_off);
+            menu.findItem(R.id.proximity).setChecked(true);
         } else {
-            menu.findItem(R.id.proximity).setTitle(R.string.proximity_on);
+            menu.findItem(R.id.proximity).setChecked(false);
         }
         // Saved vocal parameter
         if (preferences.getBoolean(getString(R.string.preference_vocal), true)) {
-            menu.findItem(R.id.vocal).setTitle(R.string.vocal_off);
+            menu.findItem(R.id.vocal).setChecked(true);
         } else {
-            menu.findItem(R.id.vocal).setTitle(R.string.vocal_on);
+            menu.findItem(R.id.vocal).setChecked(false);
         }
         return true;
     }
@@ -321,11 +322,11 @@ public class PlayerActivity extends AppCompatActivity {
                     if (musicService.isShuffle()) {
                         musicService.setShuffle(false);
                         editor.putBoolean(getString(R.string.preference_shuffle), false);
-                        menu.findItem(R.id.shuffle).setTitle(R.string.shuffle_on);
+                        menu.findItem(R.id.shuffle).setChecked(false);
                     } else {
                         musicService.setShuffle(true);
                         editor.putBoolean(getString(R.string.preference_shuffle), true);
-                        menu.findItem(R.id.shuffle).setTitle(R.string.shuffle_off);
+                        menu.findItem(R.id.shuffle).setChecked(true);
                     }
                     editor.apply();
                     return true;
@@ -335,21 +336,21 @@ public class PlayerActivity extends AppCompatActivity {
                 if (proximityHandler.isStarting()) {
                     proximityHandler.stop();
                     editor.putBoolean(getString(R.string.preference_proximity), false);
-                    menu.findItem(R.id.proximity).setTitle(R.string.proximity_on);
+                    menu.findItem(R.id.proximity).setChecked(false);
                 } else {
                     proximityHandler.start();
                     editor.putBoolean(getString(R.string.preference_proximity), true);
-                    menu.findItem(R.id.proximity).setTitle(R.string.proximity_off);
+                    menu.findItem(R.id.proximity).setChecked(true);
                 }
                 editor.apply();
                 return true;
             case R.id.vocal:
                 if (preferences.getBoolean(getString(R.string.preference_vocal), true)) {
                     editor.putBoolean(getString(R.string.preference_vocal), false);
-                    menu.findItem(R.id.vocal).setTitle(R.string.vocal_on);
+                    menu.findItem(R.id.vocal).setChecked(false);
                 } else {
                     editor.putBoolean(getString(R.string.preference_vocal), true);
-                    menu.findItem(R.id.vocal).setTitle(R.string.vocal_off);
+                    menu.findItem(R.id.vocal).setChecked(true);
                 }
                 editor.apply();
                 return true;
