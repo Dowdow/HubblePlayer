@@ -74,10 +74,10 @@ public class PlayerActivity extends AppCompatActivity {
 
         showIntro(false);
 
-        songListView = (ListView) findViewById(R.id.songList);
-        play = (ImageButton) findViewById(R.id.play);
-        emptyImage = (ImageView) findViewById(R.id.emptyImage);
-        RelativeLayout player = (RelativeLayout) findViewById(R.id.player);
+        songListView = findViewById(R.id.songList);
+        play = findViewById(R.id.play);
+        emptyImage = findViewById(R.id.emptyImage);
+        RelativeLayout player = findViewById(R.id.player);
         timeBar = player.findViewById(R.id.timeBar);
         timeBar.setOnSeekBarChangeListener(seekBarChangeListener);
         playerTitle = player.findViewById(R.id.playerTitle);
@@ -559,7 +559,7 @@ public class PlayerActivity extends AppCompatActivity {
         Intent intent;
         KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
         PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        if (powerManager.isInteractive() && !keyguardManager.inKeyguardRestrictedInputMode()) {
+        if (powerManager != null && powerManager.isInteractive() && keyguardManager != null && !keyguardManager.inKeyguardRestrictedInputMode()) {
             intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
             intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
             if (musicService != null) {
