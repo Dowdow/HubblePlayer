@@ -5,7 +5,7 @@ android {
     buildToolsVersion '26.0.2'
 
     defaultConfig {
-        applicationId "fr.banana_station.hubbleplayer"
+        applicationId "fr.banana_station.hubble_player"
         minSdkVersion 23
         targetSdkVersion 27
         versionCode 7
@@ -26,6 +26,6 @@ repositories {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:27.0.2'
+    compile 'com.android.support:appcompat-v7:27.1.0'
     compile 'com.github.apl-devs:appintro:v4.2.2'
 }

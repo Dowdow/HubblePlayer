@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="fr.banana_station.hubbleplayer">
+    package="fr.banana_station.hubble_player">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".PlayerActivity"
+            android:name="fr.banana_station.hubble_player.PlayerActivity"
             android:configChanges="orientation|keyboardHidden"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait">
@@ -23,10 +23,10 @@
         </activity>
 
         <activity
-            android:name=".Intro"
+            android:name="fr.banana_station.hubble_player.Intro"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
 
-        <service android:name=".MusicService" />
+        <service android:name="fr.banana_station.hubble_player.MusicService" />
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package fr.banana_station.hubbleplayer;
+package fr.banana_station.hubble_player;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

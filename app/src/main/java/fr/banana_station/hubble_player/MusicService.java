@@ -1,17 +1,23 @@
-package fr.banana_station.hubbleplayer;
+package fr.banana_station.hubble_player;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -294,7 +300,9 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "M_CH_ID");
+        String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel() : "";
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), channelId);
         builder.setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.vinyl)
                 .setTicker(getSongTitle())
@@ -304,6 +312,21 @@ public class MusicService extends Service implements MediaPlayer.OnPreparedListe
         Notification notification = builder.build();
         startForeground(NOTIFY_ID, notification);
         mediaPlayer.start();
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private String createNotificationChannel() {
+        String channelId = "hubble_notification_service";
+        String channelName = "Hubble Notification Service";
+        NotificationChannel notificationChannel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
+        notificationChannel.setLightColor(Color.BLUE);
+        notificationChannel.setImportance(NotificationManager.IMPORTANCE_NONE);
+        notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        NotificationManager service = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (service != null) {
+            service.createNotificationChannel(notificationChannel);
+        }
+        return channelId;
     }
 
     /**

@@ -1,4 +1,4 @@
-package fr.banana_station.hubbleplayer;
+package fr.banana_station.hubble_player;
 
 import android.Manifest;
 import android.app.KeyguardManager;
