@@ -38,6 +38,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
+import java.util.Objects;
 
 public class PlayerActivity extends AppCompatActivity {
 
@@ -95,7 +96,7 @@ public class PlayerActivity extends AppCompatActivity {
         if (!packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_PROXIMITY)) {
             showNoProximitySensor();
         }
-        proximityHandler = new ProximityHandler((SensorManager) getSystemService(Context.SENSOR_SERVICE));
+        proximityHandler = new ProximityHandler((SensorManager) Objects.requireNonNull(getSystemService(Context.SENSOR_SERVICE)));
         proximityHandler.setProximityListener(proximityListener);
         if (PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getBoolean(getString(R.string.preference_proximity), true)) {
             proximityHandler.start();

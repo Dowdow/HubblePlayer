@@ -3,11 +3,6 @@
     <string name="app_name">HubblePlayer</string>
     <string name="app_name_clean">Hubble Player</string>
 
-    <string name="preference_first_start" translatable="false">preference.firstStart</string>
-    <string name="preference_shuffle" translatable="false">preference.shuffle</string>
-    <string name="preference_proximity" translatable="false">preference.proximity</string>
-    <string name="preference_vocal" translatable="false">preference.vocal</string>
-
     <string name="intro_title_1">Welcome to Hubble Player !</string>
     <string name="intro_description_1">Here you can listen to your favorite music with some extra features …</string>
     <string name="intro_title_2">Change your music with a simple hand gesture</string>
@@ -33,4 +28,9 @@
 
     <string name="headphones_plug">Headphones plugged</string>
     <string name="headphones_unplug">Headphones unplugged</string>
+
+    <string name="preference_first_start" translatable="false">preference.firstStart</string>
+    <string name="preference_shuffle" translatable="false">preference.shuffle</string>
+    <string name="preference_proximity" translatable="false">preference.proximity</string>
+    <string name="preference_vocal" translatable="false">preference.vocal</string>
 </resources>
