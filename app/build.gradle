@@ -24,8 +24,8 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:27.1.0'
-    compile 'com.github.apl-devs:appintro:v4.2.2'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.github.apl-devs:appintro:v4.2.2'
 }
