@@ -19,11 +19,13 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -514,15 +516,13 @@ public class PlayerActivity extends AppCompatActivity {
      * @param grantResults int
      */
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_READ_EXTERNAL_STORAGE: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    fillSongList();
-                    onStart();
-                } else {
-                    exitApp();
-                }
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_READ_EXTERNAL_STORAGE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                fillSongList();
+                onStart();
+            } else {
+                exitApp();
             }
         }
     }
@@ -599,14 +599,10 @@ public class PlayerActivity extends AppCompatActivity {
             musicService.setHighVolume();
         }
         if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK) {
-            switch (resultCode) {
-                case RESULT_OK:
-                    List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    String spokenText = results.get(0);
-                    if (musicService != null) {
-                        musicService.findSong(spokenText);
-                    }
-                    break;
+            List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            String spokenText = results != null ? results.get(0) : null;
+            if (musicService != null) {
+                musicService.findSong(spokenText);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);

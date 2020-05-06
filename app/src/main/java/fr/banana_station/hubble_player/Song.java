@@ -12,7 +12,7 @@ class Song {
         this.artist = artist;
     }
 
-    public long getId() {
+    long getId() {
         return id;
     }
 
