@@ -10,11 +10,11 @@ class ProximityHandler implements SensorEventListener {
     /**
      * The sensor manager
      */
-    private SensorManager sensorManager;
+    private final SensorManager sensorManager;
     /**
      * The proximity sensor
      */
-    private Sensor proximity;
+    private final Sensor proximity;
 
     /**
      * Acquisition state boolean

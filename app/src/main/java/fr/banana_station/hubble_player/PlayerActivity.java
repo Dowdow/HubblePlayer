@@ -187,19 +187,16 @@ public class PlayerActivity extends AppCompatActivity {
      * @param bypass boolean
      */
     private void showIntro(final boolean bypass) {
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-                boolean isFirstStart = preferences.getBoolean(getString(R.string.preference_first_start), true);
-                if (isFirstStart || bypass) {
-                    Intent intent = new Intent(PlayerActivity.this, Intro.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    startActivity(intent);
-                    SharedPreferences.Editor editor = preferences.edit();
-                    editor.putBoolean(getString(R.string.preference_first_start), false);
-                    editor.apply();
-                }
+        Thread t = new Thread(() -> {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            boolean isFirstStart = preferences.getBoolean(getString(R.string.preference_first_start), true);
+            if (isFirstStart || bypass) {
+                Intent intent = new Intent(PlayerActivity.this, Intro.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putBoolean(getString(R.string.preference_first_start), false);
+                editor.apply();
             }
         });
         t.start();
@@ -289,23 +286,11 @@ public class PlayerActivity extends AppCompatActivity {
         inflater.inflate(R.menu.menu, menu);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         // Saved shuffle parameter
-        if (!preferences.getBoolean(getString(R.string.preference_shuffle), false)) {
-            menu.findItem(R.id.shuffle).setChecked(false);
-        } else {
-            menu.findItem(R.id.shuffle).setChecked(true);
-        }
+        menu.findItem(R.id.shuffle).setChecked(preferences.getBoolean(getString(R.string.preference_shuffle), false));
         // Saved proximity parameter
-        if (preferences.getBoolean(getString(R.string.preference_proximity), true)) {
-            menu.findItem(R.id.proximity).setChecked(true);
-        } else {
-            menu.findItem(R.id.proximity).setChecked(false);
-        }
+        menu.findItem(R.id.proximity).setChecked(preferences.getBoolean(getString(R.string.preference_proximity), true));
         // Saved vocal parameter
-        if (preferences.getBoolean(getString(R.string.preference_vocal), true)) {
-            menu.findItem(R.id.vocal).setChecked(true);
-        } else {
-            menu.findItem(R.id.vocal).setChecked(false);
-        }
+        menu.findItem(R.id.vocal).setChecked(preferences.getBoolean(getString(R.string.preference_vocal), true));
         return true;
     }
 
@@ -369,7 +354,7 @@ public class PlayerActivity extends AppCompatActivity {
     /**
      * Seek Bar management
      */
-    private SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
+    private final SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
 
         private int lastSelected = 0;
 
@@ -396,7 +381,7 @@ public class PlayerActivity extends AppCompatActivity {
     /**
      * Service connection binding
      */
-    private ServiceConnection serviceConnection = new ServiceConnection() {
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -406,11 +391,7 @@ public class PlayerActivity extends AppCompatActivity {
             musicConnection = true;
             setPlayerTitleText();
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-            if (!preferences.getBoolean(getString(R.string.preference_shuffle), false)) {
-                musicService.setShuffle(false);
-            } else {
-                musicService.setShuffle(true);
-            }
+            musicService.setShuffle(preferences.getBoolean(getString(R.string.preference_shuffle), false));
         }
 
         @Override
@@ -422,7 +403,7 @@ public class PlayerActivity extends AppCompatActivity {
     /**
      * Proximity Listener
      */
-    private ProximityHandler.ProximityListener proximityListener = new ProximityHandler.ProximityListener() {
+    private final ProximityHandler.ProximityListener proximityListener = new ProximityHandler.ProximityListener() {
         @Override
         public void onProximityDetected() {
             if (musicConnection) {
@@ -447,7 +428,7 @@ public class PlayerActivity extends AppCompatActivity {
         }
     };
 
-    private MusicIntentReceiver.MusicIntentListener musicIntentListener = new MusicIntentReceiver.MusicIntentListener() {
+    private final MusicIntentReceiver.MusicIntentListener musicIntentListener = new MusicIntentReceiver.MusicIntentListener() {
         @Override
         public void onHeadsetPlug() {
             if (musicService != null && playing) {
@@ -476,11 +457,11 @@ public class PlayerActivity extends AppCompatActivity {
     /**
      * Handler for the runnable
      */
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
     /**
      * Runnable to manage the seek bar progression
      */
-    private Runnable runnable = new Runnable() {
+    private final Runnable runnable = new Runnable() {
         @Override
         public void run() {
             if (musicConnection && playing) {
@@ -517,6 +498,7 @@ public class PlayerActivity extends AppCompatActivity {
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_READ_EXTERNAL_STORAGE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 fillSongList();

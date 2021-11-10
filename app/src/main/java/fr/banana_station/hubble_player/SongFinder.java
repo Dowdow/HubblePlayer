@@ -10,7 +10,7 @@ import java.util.List;
 
 class SongFinder {
 
-    private ContentResolver contentResolver;
+    private final ContentResolver contentResolver;
     private Cursor cursor;
 
     SongFinder(ContentResolver contentResolver) {

@@ -14,9 +14,9 @@ import java.util.List;
 
 class SongAdapter extends BaseAdapter implements SectionIndexer {
 
-    private List<Song> songList;
-    private LayoutInflater layoutInflater;
-    private AlphabetIndexer alphabetIndexer;
+    private final List<Song> songList;
+    private final LayoutInflater layoutInflater;
+    private final AlphabetIndexer alphabetIndexer;
 
 
     SongAdapter(Context c, List<Song> songList, Cursor cursor) {

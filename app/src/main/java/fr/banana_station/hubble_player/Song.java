@@ -2,9 +2,9 @@ package fr.banana_station.hubble_player;
 
 class Song {
 
-    private long id;
-    private String title;
-    private String artist;
+    private final long id;
+    private final String title;
+    private final String artist;
 
     Song(long id, String title, String artist) {
         this.id = id;
