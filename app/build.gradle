@@ -8,8 +8,8 @@ android {
         applicationId "fr.banana_station.hubble_player"
         minSdkVersion 23
         targetSdkVersion 31
-        versionCode 7
-        versionName "1.6"
+        versionCode 8
+        versionName "1.7"
     }
     buildTypes {
         release {

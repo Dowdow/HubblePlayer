@@ -15,7 +15,8 @@
             android:name="fr.banana_station.hubble_player.PlayerActivity"
             android:configChanges="orientation|keyboardHidden"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -24,7 +25,8 @@
 
         <activity
             android:name="fr.banana_station.hubble_player.Intro"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:exported="false"/>
 
         <service android:name="fr.banana_station.hubble_player.MusicService" />
     </application>
